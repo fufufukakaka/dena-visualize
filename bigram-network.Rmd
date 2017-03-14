@@ -1,0 +1,12 @@
+---
+title: "Bigram-dena-report"
+author: "Yusuke fukasawa"
+date: "2017/3/14"
+output: html_document
+---
+
+## Bi-Gram
+```{r}
+require(RMeCab)
+ngram_2tokens <- Ngram("dena.txt", type=1, pos=c("名詞","動詞","形容詞"), N=2)
+```
