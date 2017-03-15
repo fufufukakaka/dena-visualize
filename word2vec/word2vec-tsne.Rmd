@@ -21,9 +21,24 @@ dena.tsne.vector$label<-vector$V1
 
 #merge
 dena.tsne.vector.merge<-merge(dena.tsne.vector,network,by.x='label',by.y='label')
+#5以下のクラスは全部etcにする
+list<-data.frame(summary(dena.tsne.vector.merge$modularity_class))
+colnames(list)<-'Freq'
+list$modularity<-row.names(list)
+list$mc2<-0
+k<-1
+for(i in 1:length(list$Freq)){
+  if(list$Freq[i]<=5){
+    list$mc2[i]<-'etc'
+  }else{
+    list$mc2[i]<-k
+    k<-k+1
+  }
+}
+dena.tsne.vector.merge2<-merge(dena.tsne.vector.merge,list,by.x='modularity_class',by.y='modularity',all=T)
 
 #scatterplot
 require(scatterD3)
-dena.tsne.vector.merge$modularity_class<-as.factor(dena.tsne.vector.merge$modularity_class)
-scatterD3(data = dena.tsne.vector.merge, x = X1, y = X2, lab = label,col_var = modularity_class)
+require(RColorBrewer)
+scatterD3(data = dena.tsne.vector.merge2, x = X1, y = X2, lab = label,col_var = mc2)
 ```
