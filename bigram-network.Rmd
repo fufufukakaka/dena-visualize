@@ -6,12 +6,14 @@ output: html_document
 ---
 
 ## Bi-Gram→Network
+
+word2vecでmin_count=5だったのでそれに揃える
 ```{r}
 require(RMeCab)
 require(stringr)
 require(igraph)
 ngram_2tokens <- Ngram("dena.txt", type=1, pos=c("名詞","形容詞"), N=2)
-ngram_10<-subset(ngram_2tokens,Freq>=10)
+ngram_10<-subset(ngram_2tokens,Freq>=5)
 for (i in 1:length(ngram_10$Ngram)){
   ngram_10$Ngram[i]<-str_replace(ngram_10$Ngram[i], "\\[", "")
   ngram_10$Ngram[i]<-str_replace(ngram_10$Ngram[i], "\\]", "")

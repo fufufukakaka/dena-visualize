@@ -1,0 +1,48 @@
+---
+title: "word2vec-tsne"
+author: "Yusuke Fukasawa"
+date: "2017/3/15"
+output: html_document
+---
+
+word2vecで得られたベクトルをt-SNEで2次元に圧縮して可視化する。
+
+```{r}
+require(tsne)
+vector<-read.csv('dena_vector.csv',encoding = 'utf-8',header = F)
+network<-read.csv('expand_grid_demand_mb.csv',encoding = 'utf-8')
+
+#tSNE
+require(Rtsne)
+set.seed(1) # 再現性の確保
+dena.tsne <- Rtsne(vector, check_duplicates = FALSE, verbose=TRUE)
+dena.tsne.vector<-data.frame(dena.tsne$Y)
+dena.tsne.vector$label<-vector$V1
+
+#merge
+dena.tsne.vector.merge<-merge(dena.tsne.vector,network,by.x='label',by.y='label')
+
+#scatterplot
+require(plotly)
+require(scatterD3)
+
+g <- ggplot(
+  dena.tsne.vector.merge,                   
+  aes (
+    x = X1,                
+    y = X2
+  )
+)
+g <- g +  geom_point(
+  aes(text = paste("Name:", label),colour=as.factor(modularity_class)),
+  shape = 20,              
+  size = 0.8,             
+  na.rm = TRUE          
+)
+g <- g + xlab("X")    
+g <- g + ylab("Y")  
+g <- g + ggtitle("Dena Report t-SNE Visualize") 
+
+plot(g)
+ggplotly(g)
+```
