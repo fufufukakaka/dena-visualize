@@ -5,8 +5,35 @@ date: "2017/3/14"
 output: html_document
 ---
 
-## Bi-Gram
+## Bi-Gram→Network
 ```{r}
 require(RMeCab)
-ngram_2tokens <- Ngram("dena.txt", type=1, pos=c("名詞","動詞","形容詞"), N=2)
+require(stringr)
+require(igraph)
+ngram_2tokens <- Ngram("dena.txt", type=1, pos=c("名詞","形容詞"), N=2)
+ngram_10<-subset(ngram_2tokens,Freq>=10)
+for (i in 1:length(ngram_10$Ngram)){
+  ngram_10$Ngram[i]<-str_replace(ngram_10$Ngram[i], "\\[", "")
+  ngram_10$Ngram[i]<-str_replace(ngram_10$Ngram[i], "\\]", "")
+}
+ngram_10$From<-0
+ngram_10$To<-0
+for (i in 1:length(ngram_10$Ngram)){
+  a<-str_split(ngram_10$Ngram[i],'-')
+  ngram_10$From[i]<-a[[1]][1]
+  ngram_10$To[i]<-a[[1]][2]
+}
+#FromかToが数字や記号の行は消す
+ngram_10$exclude<-0
+for (i in 1:length(ngram_10$Ngram)){
+  flag1<-str_detect(ngram_10$From[i], '[0-9 | -/:-@\\[-\`\\{-\\~]')
+  flag2<-str_detect(ngram_10$To[i], '[0-9 | -/:-@\\[-\`\\{-\\~]')
+  ngram_10$exclude[i]<-flag1+flag2
+}
+ngram_10_ex<-subset(ngram_10,exclude==0)
+
+#Network
+g <- graph.data.frame(ngram_10_ex[3:4],directed=F)
+E(g)$weight <- ngram_10_ex[[2]]
+write.graph(g,'bigram/bigraph.graphml','graphml')
 ```
