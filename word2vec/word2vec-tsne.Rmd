@@ -23,26 +23,7 @@ dena.tsne.vector$label<-vector$V1
 dena.tsne.vector.merge<-merge(dena.tsne.vector,network,by.x='label',by.y='label')
 
 #scatterplot
-require(plotly)
 require(scatterD3)
-
-g <- ggplot(
-  dena.tsne.vector.merge,                   
-  aes (
-    x = X1,                
-    y = X2
-  )
-)
-g <- g +  geom_point(
-  aes(text = paste("Name:", label),colour=as.factor(modularity_class)),
-  shape = 20,              
-  size = 0.8,             
-  na.rm = TRUE          
-)
-g <- g + xlab("X")    
-g <- g + ylab("Y")  
-g <- g + ggtitle("Dena Report t-SNE Visualize") 
-
-plot(g)
-ggplotly(g)
+dena.tsne.vector.merge$modularity_class<-as.factor(dena.tsne.vector.merge$modularity_class)
+scatterD3(data = dena.tsne.vector.merge, x = X1, y = X2, lab = label,col_var = modularity_class)
 ```
