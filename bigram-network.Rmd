@@ -12,7 +12,7 @@ word2vecでmin_count=5だったのでそれに揃える
 require(RMeCab)
 require(stringr)
 require(igraph)
-ngram_2tokens <- Ngram("dena.txt", type=1, pos=c("名詞","形容詞"), N=2)
+ngram_2tokens <- Ngram("dena.txt", type=1, pos="名詞", N=2)
 ngram_10<-subset(ngram_2tokens,Freq>=5)
 for (i in 1:length(ngram_10$Ngram)){
   ngram_10$Ngram[i]<-str_replace(ngram_10$Ngram[i], "\\[", "")
@@ -37,5 +37,5 @@ ngram_10_ex<-subset(ngram_10,exclude==0)
 #Network
 g <- graph.data.frame(ngram_10_ex[3:4],directed=F)
 E(g)$weight <- ngram_10_ex[[2]]
-write.graph(g,'bigram/bigraph.graphml','graphml')
+write.graph(g,'bigram/bigraph_meishi.graphml','graphml')
 ```
