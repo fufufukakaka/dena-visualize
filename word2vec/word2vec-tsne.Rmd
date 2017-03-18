@@ -8,9 +8,16 @@ output: html_document
 word2vecで得られたベクトルをt-SNEで2次元に圧縮して可視化する。
 
 ```{r}
-require(tsne)
 vector<-read.csv('dena_vector.csv',encoding = 'utf-8',header = F)
-network<-read.csv('expand_grid_demand_mb.csv',encoding = 'utf-8')
+network<-read.csv('nodelist.csv',encoding = 'utf-8')
+
+#クラスター名を調整しておく
+network$cluster_name<-'l.その他'
+mclist<-c(41,17,40,34,37,9,32,36,4,30,18)
+classlist<-c('a.記事作成','b.リスクに関する議論','c.媒介単語','d.画像','e.外部ディレクター','f.事業全体','g.人物名','h.専門家の監修','i.組織の構造','j.事前確認','k.外部ライター')
+for(i in 1:11){
+  network$cluster_name[network$modularity_class==mclist[i]]<-classlist[i]
+}
 
 #tSNE
 require(Rtsne)
@@ -21,24 +28,8 @@ dena.tsne.vector$label<-vector$V1
 
 #merge
 dena.tsne.vector.merge<-merge(dena.tsne.vector,network,by.x='label',by.y='label')
-#5以下のクラスは全部etcにする
-list<-data.frame(summary(dena.tsne.vector.merge$modularity_class))
-colnames(list)<-'Freq'
-list$modularity<-row.names(list)
-list$mc2<-0
-k<-1
-for(i in 1:length(list$Freq)){
-  if(list$Freq[i]<=5){
-    list$mc2[i]<-'etc'
-  }else{
-    list$mc2[i]<-k
-    k<-k+1
-  }
-}
-dena.tsne.vector.merge2<-merge(dena.tsne.vector.merge,list,by.x='modularity_class',by.y='modularity',all=T)
-
 #scatterplot
 require(scatterD3)
 require(RColorBrewer)
-scatterD3(data = dena.tsne.vector.merge2, x = X1, y = X2, lab = label,col_var = mc2)
+scatterD3(data = dena.tsne.vector.merge, x = X1, y = X2, lab = label,col_var = cluster_name)
 ```
